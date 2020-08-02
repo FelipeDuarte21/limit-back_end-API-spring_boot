@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hackathon.limit.model.Store;
+import com.hackathon.limit.resource.exceptions.ObjectBadRequestException;
+import com.hackathon.limit.resource.exceptions.ObjectNotFoundException;
 import com.hackathon.limit.service.StoreService;
 
 @RestController
@@ -31,7 +33,7 @@ public class StoreResource {
 			return ResponseEntity.status(HttpStatus.CREATED).body(s);
 		}
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		throw new ObjectBadRequestException("Loja já cadastrada!");
 	}
 	
 	@GetMapping("/neighborhood")
@@ -43,7 +45,7 @@ public class StoreResource {
 			return ResponseEntity.status(HttpStatus.OK).body(stores);
 		}
 		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		throw new ObjectNotFoundException("Não há lojas para o bairro informado!");
 	}
 	
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hackathon.limit.model.DTO.SheduleDTO;
+import com.hackathon.limit.model.DTO.SheduleReturnDTO;
 import com.hackathon.limit.service.SheduleService;
 
 @RestController
@@ -22,11 +23,11 @@ public class SheduleResource {
 	private SheduleService service;
 	
 	@PostMapping
-	public ResponseEntity<?> requestPassword(@RequestBody SheduleDTO shedule){
-		String password = this.service.requestPassword(shedule);
+	public ResponseEntity<SheduleReturnDTO> requestPassword(@RequestBody SheduleDTO shedule){
+		SheduleReturnDTO sheduleReturn = this.service.requestPassword(shedule);
 		
-		if(password != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(password);
+		if(sheduleReturn != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(sheduleReturn);
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -1,18 +1,19 @@
 package com.hackathon.limit.service;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hackathon.limit.model.Client;
 import com.hackathon.limit.model.Shedule;
 import com.hackathon.limit.model.Store;
 import com.hackathon.limit.model.DTO.SheduleDTO;
-import com.hackathon.limit.repository.ClientRepository;
+import com.hackathon.limit.model.DTO.SheduleReturnDTO;
+import com.hackathon.limit.model.enums.StatusType;
 import com.hackathon.limit.repository.SheduleRepository;
 
 @Service
@@ -22,111 +23,124 @@ public class SheduleService {
 	private SheduleRepository repository;
 	
 	@Autowired
-	private ClientRepository clientRepository;
-	
-	@Autowired
 	private StoreService storeService;
 	
 	
-	public String requestPassword(SheduleDTO shedule){
+	public SheduleReturnDTO requestPassword(SheduleDTO shedule){
 		
 		Store store = this.storeService.findById(shedule.getStore());
 		
-		int dayOpen = this.dayOfWeek(store.getDayOpen());
-		int dayClose = this.dayOfWeek(store.getDayClose());
-		int hourOpen =  Integer.parseInt(store.getHourOpen().split(":")[0]);
-		int hourClose = Integer.parseInt(store.getHourClose().split(":")[0]);
+		//Verifica se tem tempo disponivel
+		boolean haveSpace = true;
 		
-		System.out.println("Antes de Entrar");
+		int limit = this.limit(store.getMaximumCapacity());
 		
-		if(shedule.getDate().getDay() >= dayOpen && shedule.getDate().getDay() <= dayClose 
-			&& shedule.getHour().getHours() >= hourOpen && shedule.getHour().getHours() <= hourClose) {
+		GregorianCalendar gc = this.getCalendar(shedule.getHour());
+		
+		for(int i=0; i < shedule.getRangeTime(); i++) {
+			gc.add(Calendar.MINUTE, store.getRangeTime()*i);
+			LocalDateTime ldt = this.getLocalDateTime(gc);
+			List<Shedule> shedules = this.repository.findByStoreAndDateAndHour(store, 
+						shedule.getDate(), ldt);
+			if(shedules.size() == limit) {
+				haveSpace = false;
+				break;
+			}
+		}
 			
-			System.out.print("Entrou aqui!");
+		//Se tiver tempo, reserva o tempo
+		if(haveSpace) {
+				
+			//Gerar senha
+			String password = this.passwordGenerator();
+				
+				
+			GregorianCalendar gc2 = this.getCalendar(shedule.getHour());
+			System.out.println("hora: " + gc2.getTime());
 			
-			int limit = this.limit(store.getMaximumCapacity());
-			
-			GregorianCalendar gc = new GregorianCalendar();
-		    gc.setTime(shedule.getHour());
-		    
-		    List<Shedule> shedules;
-		    
-		    boolean haveSpace = true;
+			LocalDateTime end = null;
 			
 			for(int i=0; i < shedule.getRangeTime(); i++) {
-				gc.add(Calendar.MINUTE, store.getRangeTime());
-				shedules = this.repository.findByStoreAndDateAndHour(store, 
-						shedule.getDate(), gc.getTime());
-				if(shedules.size() == limit) {
-					haveSpace = false;
-					break;
-				}
-			}
-			
-			if(haveSpace) {
+				gc2.add(Calendar.MINUTE, store.getRangeTime()*i);
 				
-				//Gerar senha
-				String password = "A32546"; //Por enquanto
-				
-				System.out.println("Aqui 2");
-				Client c = new Client();
-				c.setName(shedule.getName()); 
-				c.setCpf(shedule.getCpf());
-				c = this.clientRepository.save(c);
-				
-				GregorianCalendar gc2 = new GregorianCalendar();
-			    gc2.setTime(shedule.getHour());
-			    
-			    Shedule[] shedulesSalve = new Shedule[shedule.getRangeTime()];
-				
-				for(int i=0; i < shedulesSalve.length; i++) {
+				Shedule s = new Shedule();
+				s.setName(shedule.getName());
+				s.setCpf(shedule.getCpf());
+ 				s.setStore(store);
+				s.setDate(shedule.getDate());
+				s.setHour(this.getLocalDateTime(gc2));
+				s.setPassword(password);
+				s.setStatus(StatusType.SHEDULED.getCod());
+				this.repository.save(s);
+				if(i == shedule.getRangeTime() - 1) { //Pega o tempo do ultimo
 					gc2.add(Calendar.MINUTE, store.getRangeTime());
-					shedulesSalve[i] = new Shedule();
-					shedulesSalve[i].setClient(c);
-					shedulesSalve[i].setStore(store);
-					shedulesSalve[i].setDate(gc2.getTime());
-					shedulesSalve[i].setPassword(password);
+					end = this.getLocalDateTime(gc2);
 				}
-				
-				for(int i=0; i < shedulesSalve.length; i++) {
-					shedulesSalve[i].setClient(this.clientRepository.save(shedulesSalve[i].getClient()));
-					this.repository.save(shedulesSalve[i]);
-				}
-				
-				return password;
-				
 			}
-			
+				
+			SheduleReturnDTO sheduleReturn = new SheduleReturnDTO();
+			sheduleReturn.setName(shedule.getName());
+			sheduleReturn.setCpf(shedule.getCpf());
+			sheduleReturn.setPassword(password);
+			sheduleReturn.setDate(shedule.getDate());
+			sheduleReturn.setStart(shedule.getHour());
+			sheduleReturn.setEnd(end);
+				
+			return sheduleReturn;
+		}else {
+			SheduleReturnDTO sheduleReturn = new SheduleReturnDTO();
+			sheduleReturn.setDate(null);
+			return sheduleReturn;
 		}
 		
-		return null;
-	}
-	
-	private int dayOfWeek(String day) {
-		switch(day) {
-			case "Domingo":
-				return 0;
-			case "Segunda":
-				return 1;
-			case "Terça":
-				return 2;
-			case "Quarta":
-				return 3;
-			case "Quinta":
-				return 4;
-			case "Sexta":
-				return 5;
-			case "Sábado":
-				return 6;
-			default:
-				return -1;
-		}
 	}
 	
 	private int limit(int maximumCapacity) {
-		
 		return (50 * maximumCapacity) / 100;
+	}
+	
+	private GregorianCalendar getCalendar(LocalDateTime ldt) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.set(Calendar.DATE, ldt.getDayOfMonth());
+		gc.set(Calendar.MONTH, ldt.getMonth().getValue()-1);
+		gc.set(Calendar.YEAR, ldt.getYear());
+		gc.set(Calendar.HOUR, ldt.getHour());
+		gc.set(Calendar.MINUTE, ldt.getMinute());
+		gc.set(Calendar.SECOND, ldt.getSecond());
+		return gc;
+	}
+	
+	private LocalDateTime getLocalDateTime(GregorianCalendar gc) {
+		LocalDateTime ldt = LocalDateTime.of(
+			gc.get(Calendar.YEAR), gc.get(Calendar.MONTH), gc.get(Calendar.DATE), 
+			gc.get(Calendar.HOUR), gc.get(Calendar.MINUTE));
+		return ldt;
+	}
+	
+	private String passwordGenerator() {
 		
+		String password = "";
+		
+		int qtdLetter = 2;
+		int qtdNumber = 3;
+		
+		
+		String numbers[] = {"0","1","2","3","4","5","6","7","8","9"};
+		String alphabet[] = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","y","x","z"};
+		
+		Random rd = new Random();
+		
+		for(int i=0; i < qtdLetter; i++) {
+			String letter = alphabet[rd.nextInt(alphabet.length)];
+			password += letter;
+		}
+		
+		for(int i=0; i < qtdNumber; i++) {
+			String number = numbers[rd.nextInt(numbers.length)];
+			password += number;
+		}
+		
+		return password;
 	}
 	
 	public void enablePassword(String password){

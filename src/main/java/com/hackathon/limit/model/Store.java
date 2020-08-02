@@ -55,11 +55,11 @@ public class Store implements Serializable{
 	
 	// getters and setters
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -79,11 +79,11 @@ public class Store implements Serializable{
 		this.name = name;
 	}
 
-	public float getMetreage() {
+	public Float getMetreage() {
 		return metreage;
 	}
 
-	public void setMetreage(float metreage) {
+	public void setMetreage(Float metreage) {
 		this.metreage = metreage;
 	}
 	

@@ -1,7 +1,8 @@
 package com.hackathon.limit.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,9 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,19 +25,17 @@ public class Shedule implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Temporal(TemporalType.DATE)
-	private Date date;
+	private LocalDate date;
 	
-	@Temporal(TemporalType.TIME)
-	private Date hour;
+	private LocalDateTime hour;
 	
 	private String password;
 	
+	private String name;
 	
-	@JsonIgnore
-	@OneToOne
-	@JoinColumn(name="client_id")
-	private Client client;
+	private String cpf;
+	
+	private Integer status;
 	
 	@JsonIgnore
 	@ManyToOne
@@ -54,27 +50,27 @@ public class Shedule implements Serializable{
 	
 	// getters and setters
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return this.date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	
-	public Date getHour() {
+	public LocalDateTime getHour() {
 		return this.hour;
 	}
 
-	public void setHour(Date hour) {
+	public void setHour(LocalDateTime hour) {
 		this.hour = hour;
 	}
 
@@ -86,20 +82,36 @@ public class Shedule implements Serializable{
 		this.password = password;
 	}
 
-	public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
-	}
-
 	public Store getStore() {
 		return store;
 	}
 
 	public void setStore(Store store) {
 		this.store = store;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	@Override

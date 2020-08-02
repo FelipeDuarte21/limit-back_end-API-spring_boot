@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hackathon.limit.model.Address;
+import com.hackathon.limit.resource.exceptions.ObjectNotFoundException;
 import com.hackathon.limit.service.AddressService;
 
 @RestController
@@ -29,7 +30,7 @@ public class AddressResource {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(address);
+		throw new ObjectNotFoundException("Não há endereços cadastrados!");
 	}
 	
 	@GetMapping("/city")
@@ -41,7 +42,7 @@ public class AddressResource {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(address);
+		throw new ObjectNotFoundException("Não há endereços cadastrados para a cidade informada!");
 	}
 	
 	@GetMapping("/neighborhood")
@@ -53,7 +54,7 @@ public class AddressResource {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(address);
+		throw new ObjectNotFoundException("Não há endereços cadastrados para o bairro informado!");
 		
 	}
 	

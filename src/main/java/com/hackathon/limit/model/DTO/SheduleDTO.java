@@ -1,9 +1,7 @@
 package com.hackathon.limit.model.DTO;
 
-import java.util.Date;
-
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -12,12 +10,10 @@ public class SheduleDTO {
 	private Long store;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@Temporal(TemporalType.DATE)
-	private Date date;
+	private LocalDate date;
 	
-	@JsonFormat(pattern = "HH:mm")
-	@Temporal(TemporalType.TIME)
-	private Date hour;
+	@JsonFormat(pattern = "dd/MM/yyy HH:mm:ss")
+	private LocalDateTime hour;
 	
 	private Integer rangeTime;
 	private String name;
@@ -35,19 +31,19 @@ public class SheduleDTO {
 		this.store = store;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return this.date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	
-	public Date getHour() {
+	public LocalDateTime getHour() {
 		return this.hour;
 	}
 
-	public void setHour(Date hour) {
+	public void setHour(LocalDateTime hour) {
 		this.hour = hour;
 	}
 
