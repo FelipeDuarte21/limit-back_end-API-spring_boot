@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Address implements Serializable{
 	
@@ -25,6 +27,7 @@ public class Address implements Serializable{
 	private String neighborhood;
 	private String address;
 	
+	@JsonIgnore
 	@OneToOne(mappedBy = "address")
 	private Store store;
 	

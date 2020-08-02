@@ -33,7 +33,7 @@ public class AddressResource {
 	}
 	
 	@GetMapping("/city")
-	public ResponseEntity<List<Address>> findByCity(@RequestParam String city){
+	public ResponseEntity<List<Address>> findByCity(@RequestParam(name = "value") String city){
 		
 		List<Address> address = this.service.findByCity(city);
 		
@@ -45,7 +45,7 @@ public class AddressResource {
 	}
 	
 	@GetMapping("/neighborhood")
-	public ResponseEntity<List<Address>> findByNeighborhood(String neighborhood){
+	public ResponseEntity<List<Address>> findByNeighborhood(@RequestParam(name = "value") String neighborhood){
 		
 		List<Address> address = this.service.findByNeighborhood(neighborhood);
 		

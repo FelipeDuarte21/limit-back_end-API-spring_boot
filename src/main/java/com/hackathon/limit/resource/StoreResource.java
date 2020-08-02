@@ -27,11 +27,15 @@ public class StoreResource {
 		
 		Store s = this.service.register(store);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(s);
+		if(s != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(s);
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	@GetMapping("/neighborhood")
-	public ResponseEntity<List<Store>> findByNeighborhood(@RequestParam String neighborhood){
+	public ResponseEntity<List<Store>> findByNeighborhood(@RequestParam(name = "value") String neighborhood){
 		
 		List<Store> stores = this.service.findByNeighborhood(neighborhood);
 		

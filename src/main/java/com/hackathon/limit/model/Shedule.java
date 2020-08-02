@@ -13,6 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Shedule implements Serializable{
 	
@@ -26,17 +28,20 @@ public class Shedule implements Serializable{
 	private Long id;
 	
 	@Temporal(TemporalType.DATE)
-	private Date dateHour;
+	private Date date;
 	
-	private Integer rangeTime;
+	@Temporal(TemporalType.TIME)
+	private Date hour;
 	
 	private String password;
 	
 	
+	@JsonIgnore
 	@OneToOne
 	@JoinColumn(name="client_id")
 	private Client client;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "store_id")
 	private Store store;
@@ -58,19 +63,19 @@ public class Shedule implements Serializable{
 	}
 
 	public Date getDate() {
-		return dateHour;
+		return this.date;
 	}
 
-	public void setDate(Date dateHour) {
-		this.dateHour = dateHour;
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
+	public Date getHour() {
+		return this.hour;
 	}
 
-	public Integer getRange() {
-		return rangeTime;
-	}
-
-	public void setRange(Integer range) {
-		this.rangeTime = range;
+	public void setHour(Date hour) {
+		this.hour = hour;
 	}
 
 	public String getPassword() {

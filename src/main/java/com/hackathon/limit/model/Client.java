@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Client implements Serializable{
 	
@@ -23,6 +25,7 @@ public class Client implements Serializable{
 	private String name;
 	private String cpf;
 	
+	@JsonIgnore
 	@OneToOne(mappedBy = "client")
 	private Shedule shedule;
 	

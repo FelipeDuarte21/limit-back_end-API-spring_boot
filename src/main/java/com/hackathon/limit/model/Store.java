@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Store implements Serializable{
 	
@@ -25,6 +27,7 @@ public class Store implements Serializable{
 	private String cnpj;
 	private String name;
 	private Float metreage;
+	private Integer maximumCapacity;
 	private String hourOpen;
 	private String hourClose;
 	private String dayOpen;
@@ -35,10 +38,12 @@ public class Store implements Serializable{
 	private Integer mediumTime;
 	private Integer bigTime;
 	
+	
 	@OneToOne
-	@JoinColumn(name = "addrres_id")
+	@JoinColumn(name = "address_id")
 	private Address address;
 	
+	@JsonIgnore	
 	@OneToMany(mappedBy = "store")
 	private List<Shedule> shedules;
 	
@@ -80,6 +85,14 @@ public class Store implements Serializable{
 
 	public void setMetreage(float metreage) {
 		this.metreage = metreage;
+	}
+	
+	public Integer getMaximumCapacity() {
+		return maximumCapacity;
+	}
+
+	public void setMaximumCapacity(Integer maximumCapacity) {
+		this.maximumCapacity = maximumCapacity;
 	}
 
 	public String getHourOpen() {
