@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hackathon.limit.model.DTO.SheduleDTO;
 import com.hackathon.limit.model.DTO.SheduleReturnDTO;
+import com.hackathon.limit.resource.exceptions.ObjectBadRequestException;
 import com.hackathon.limit.service.SheduleService;
 
 @RestController
@@ -26,21 +27,39 @@ public class SheduleResource {
 	public ResponseEntity<SheduleReturnDTO> requestPassword(@RequestBody SheduleDTO shedule){
 		SheduleReturnDTO sheduleReturn = this.service.requestPassword(shedule);
 		
-		if(sheduleReturn != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(sheduleReturn);
+		if(sheduleReturn == null) {
+			throw new ObjectBadRequestException("Você Já Reservou esse horário");
 		}
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		if(sheduleReturn.getDate() == null) {
+			throw new ObjectBadRequestException("Não há vagas para o horario informado!");
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(sheduleReturn);
 	}
 	
 	@PutMapping("/enable")
-	public ResponseEntity<?> enablePassword(@RequestParam String password){
-		return null;
+	public ResponseEntity<String> enablePassword(@RequestParam(name = "value") String password){
+		
+		boolean shedule = this.service.enablePassword(password);
+		
+		if(!shedule) {
+			throw new ObjectBadRequestException("Senha inválida!");
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body("Senha Ativada!");
 	}
 	
 	@DeleteMapping("/disable")
-	public ResponseEntity<?> disablePassword(@RequestParam String password){
-		return null;
+	public ResponseEntity<?> disablePassword(@RequestParam(name = "value") String password){
+		
+		boolean shedule = this.service.disablePassword(password);
+		
+		if(!shedule) {
+			throw new ObjectBadRequestException("Senha inválida!");
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body("Senha Desativa!");
 	}
 	
 }

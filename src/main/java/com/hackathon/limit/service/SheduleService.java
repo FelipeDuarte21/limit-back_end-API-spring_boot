@@ -30,6 +30,22 @@ public class SheduleService {
 		
 		Store store = this.storeService.findById(shedule.getStore());
 		
+		//verifca se já foi cadastrado;
+		List<Shedule> sdls = this.repository.findByCpf(shedule.getCpf());
+		
+		System.out.println("Hora: " + shedule.getHour().toString());
+		
+		if(!sdls.isEmpty()) {
+			for(int i=0; i < sdls.size(); i++) {
+				System.out.println("Hora: " + sdls.get(i).getHour().toString());
+				if(sdls.get(i).getDate().toString().equals(shedule.getDate().toString()) && 
+						sdls.get(i).getHour().toString().equals(shedule.getHour().toString())) {
+					
+					return null;
+				}
+			}
+		}
+		
 		//Verifica se tem tempo disponivel
 		boolean haveSpace = true;
 		
@@ -54,11 +70,7 @@ public class SheduleService {
 			//Gerar senha
 			String password = this.passwordGenerator();
 				
-				
 			GregorianCalendar gc2 = this.getCalendar(shedule.getHour());
-			System.out.println("hora: " + gc2.getTime());
-			
-			LocalDateTime end = null;
 			
 			for(int i=0; i < shedule.getRangeTime(); i++) {
 				gc2.add(Calendar.MINUTE, store.getRangeTime()*i);
@@ -72,10 +84,6 @@ public class SheduleService {
 				s.setPassword(password);
 				s.setStatus(StatusType.SHEDULED.getCod());
 				this.repository.save(s);
-				if(i == shedule.getRangeTime() - 1) { //Pega o tempo do ultimo
-					gc2.add(Calendar.MINUTE, store.getRangeTime());
-					end = this.getLocalDateTime(gc2);
-				}
 			}
 				
 			SheduleReturnDTO sheduleReturn = new SheduleReturnDTO();
@@ -84,10 +92,9 @@ public class SheduleService {
 			sheduleReturn.setPassword(password);
 			sheduleReturn.setDate(shedule.getDate());
 			sheduleReturn.setStart(shedule.getHour());
-			sheduleReturn.setEnd(end);
 				
 			return sheduleReturn;
-		}else {
+		}else { //Se não tiver retona um objeto de retorno com a data nula
 			SheduleReturnDTO sheduleReturn = new SheduleReturnDTO();
 			sheduleReturn.setDate(null);
 			return sheduleReturn;
@@ -102,7 +109,7 @@ public class SheduleService {
 	private GregorianCalendar getCalendar(LocalDateTime ldt) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.set(Calendar.DATE, ldt.getDayOfMonth());
-		gc.set(Calendar.MONTH, ldt.getMonth().getValue()-1);
+		gc.set(Calendar.MONTH, ldt.getMonth().getValue());
 		gc.set(Calendar.YEAR, ldt.getYear());
 		gc.set(Calendar.HOUR, ldt.getHour());
 		gc.set(Calendar.MINUTE, ldt.getMinute());
@@ -143,12 +150,35 @@ public class SheduleService {
 		return password;
 	}
 	
-	public void enablePassword(String password){
+	public boolean enablePassword(String password){
 		
+		List<Shedule> shedules = this.repository.findByPassword(password);
+		
+		if(!shedules.isEmpty()) {
+			shedules.forEach(shedule -> {
+				shedule.setStatus(StatusType.NOW.getCod());
+				this.repository.save(shedule);
+			});
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
-	public void disablePassword(String password){
+	public boolean disablePassword(String password){
 		
+		List<Shedule> shedules = this.repository.findByStatusAndPassword(StatusType.NOW.getCod(),password);
+		
+		if(!shedules.isEmpty()) {
+			shedules.forEach(shedule -> {
+				this.repository.delete(shedule);
+			});
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 }

@@ -36,10 +36,11 @@ public class AddressService {
 			return address;
 		}
 		
-		return address;
+		return null;
 	}
 	
 	public List<Address> findByNeighborhood(String neighborhood){
+		
 		List<Address> address = this.repository.findByNeighborhood(neighborhood);
 		
 		if(!address.isEmpty()) {

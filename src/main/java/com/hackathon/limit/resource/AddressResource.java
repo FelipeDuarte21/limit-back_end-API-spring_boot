@@ -26,7 +26,7 @@ public class AddressResource {
 		
 		List<Address> address = this.service.findAll();
 		
-		if(!address.isEmpty()) {
+		if(address != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		
@@ -38,7 +38,7 @@ public class AddressResource {
 		
 		List<Address> address = this.service.findByCity(city);
 		
-		if(!address.isEmpty()) {
+		if(address != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		
@@ -50,7 +50,7 @@ public class AddressResource {
 		
 		List<Address> address = this.service.findByNeighborhood(neighborhood);
 		
-		if(!address.isEmpty()) {
+		if(address != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(address);
 		}
 		

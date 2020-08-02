@@ -13,7 +13,6 @@ public class SheduleReturnDTO implements Serializable {
 	private String password;
 	private LocalDate date;
 	private LocalDateTime start;
-	private LocalDateTime end;
 	
 	public SheduleReturnDTO() {
 		
@@ -57,14 +56,6 @@ public class SheduleReturnDTO implements Serializable {
 
 	public void setStart(LocalDateTime start) {
 		this.start = start;
-	}
-
-	public LocalDateTime getEnd() {
-		return end;
-	}
-
-	public void setEnd(LocalDateTime end) {
-		this.end = end;
 	}
 	
 }

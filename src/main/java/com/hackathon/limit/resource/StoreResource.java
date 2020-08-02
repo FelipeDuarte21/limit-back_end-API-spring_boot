@@ -41,7 +41,7 @@ public class StoreResource {
 		
 		List<Store> stores = this.service.findByNeighborhood(neighborhood);
 		
-		if(!stores.isEmpty()){
+		if(stores != null){
 			return ResponseEntity.status(HttpStatus.OK).body(stores);
 		}
 		

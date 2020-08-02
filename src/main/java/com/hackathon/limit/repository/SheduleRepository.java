@@ -14,5 +14,11 @@ import com.hackathon.limit.model.Store;
 public interface SheduleRepository extends JpaRepository<Shedule,Long> {
 	
 	public List<Shedule> findByStoreAndDateAndHour(Store store,LocalDate date,LocalDateTime hour);
+	
+	public List<Shedule> findByCpf(String cpf);
+	
+	public List<Shedule> findByPassword(String password);
+	
+	public List<Shedule> findByStatusAndPassword(Integer status,String password);
 
 }
