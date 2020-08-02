@@ -1,22 +1,30 @@
 package com.hackathon.limit.model;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
-public class Store {
+public class Store implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	//Variables
 	
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
 	private String cnpj;
 	private String name;
-	private float metreage;
+	private Float metreage;
 	private String hourOpen;
 	private String hourClose;
 	private String dayOpen;
@@ -26,8 +34,13 @@ public class Store {
 	private Integer rangeTime;
 	private Integer mediumTime;
 	private Integer bigTime;
-	private Address Address;
-	private Shedule Shedule;
+	
+	@OneToOne
+	@JoinColumn(name = "addrres_id")
+	private Address address;
+	
+	@OneToMany(mappedBy = "store")
+	private List<Shedule> shedules;
 	
 	//constructor
 	
@@ -142,27 +155,44 @@ public class Store {
 	}
 
 	public Address getAddress() {
-		return Address;
+		return address;
 	}
 
 	public void setAddress(Address address) {
-		Address = address;
+		this.address = address;
 	}
 
-	public Shedule getShedule() {
-		return Shedule;
+	public List<Shedule> getShedule() {
+		return this.shedules;
 	}
 
-	public void setShedule(Shedule shedule) {
-		Shedule = shedule;
+	public void setShedule(List<Shedule> shedule) {
+		this.shedules = shedule;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Store other = (Store) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 	
 }
